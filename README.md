@@ -2,17 +2,18 @@
 
 An offline, document-grounded chatbot that answers questions using technical documentation from the Internet Atlas project.
 
-The chatbot uses a local language model through **llama.cpp** and a document search index to retrieve relevant information and generate answers based on the available documentation.
+The application uses a local Qwen 2.5 1.5B Instruct language model served through llama.cpp. It combines semantic and keyword-based document retrieval to generate answers grounded in the available project documentation.
 
 ## Features
 
-- Answers questions using Internet Atlas project documentation.
-- Supports semantic and keyword-based document retrieval.
-- Uses a FAISS index for efficient document search.
-- Runs a local Qwen 2.5 1.5B Instruct model through llama.cpp.
-- Includes answer validation to reduce unsupported responses.
-- Provides evaluation and retrieval-testing scripts.
-- Uses a Flask application for the chatbot interface and backend.
+- Answers questions using Internet Atlas documentation.
+- Semantic document retrieval using FAISS.
+- Keyword-based retrieval using BM25.
+- Local answer generation using Qwen 2.5 1.5B Instruct.
+- Answer validation to reduce unsupported responses.
+- Flask-based chatbot interface.
+- Evaluation and retrieval-testing scripts.
+- No Ollama dependency.
 
 ## Technology Stack
 
@@ -35,6 +36,8 @@ internet-atlas-chatbot/
 ├── build_index.py
 ├── eval.py
 ├── test_retrieval.py
+├── requirements.txt
+├── README.md
 ├── .gitignore
 │
 ├── documents/
@@ -49,32 +52,22 @@ internet-atlas-chatbot/
     └── manifest.json
 ```
 
-## Project Files
+## Models and Runtime
 
-| File | Description |
-|---|---|
-| `app.py` | Main chatbot application, retrieval, and answer generation |
-| `build_index.py` | Builds the searchable document index |
-| `eval.py` | Evaluates chatbot performance |
-| `test_retrieval.py` | Tests document retrieval |
-| `documents/` | Contains Internet Atlas project README documents |
-| `index/` | Contains the generated FAISS index and document chunks |
+The chatbot uses the following components:
 
-## Models Required
+1. **Qwen 2.5 1.5B Instruct (Q4_K_M GGUF)** – generates answers locally.
+2. **all-MiniLM-L6-v2** – generates embeddings for document retrieval.
+3. **llama.cpp** – runs the Qwen model through a local HTTP server.
 
-The following models are used separately from the source code:
-
-1. **Qwen 2.5 1.5B Instruct (GGUF)** – used for local answer generation through llama.cpp.
-2. **all-MiniLM-L6-v2** – used to generate document embeddings for retrieval.
-
-These model files are not included in this repository and must be obtained separately.
+The model files and llama.cpp runtime are maintained separately and are not included in this repository.
 
 ## Setup
 
 ### 1. Clone the repository
 
 ```bash
-git clone <YOUR_PRIVATE_REPOSITORY_URL>
+git clone https://github.com/Gayatri467/internet-atlas-chatbot.git
 cd internet-atlas-chatbot
 ```
 
@@ -87,35 +80,75 @@ source .venv/bin/activate
 
 ### 3. Install dependencies
 
-Install the Python dependencies listed in `requirements.txt` (to be added).
+```bash
+pip install -r requirements.txt
+```
 
-### 4. Configure the models
+### 4. Obtain the models and llama.cpp
 
-Obtain the required Qwen GGUF model and embedding model.
+The Qwen GGUF model, embedding model, and llama.cpp runtime are maintained in the separate Docling HTML project.
 
-Configure their local paths according to the application settings.
+Ensure these resources are available locally and that the model paths configured in the chatbot application point to their locations.
 
-### 5. Start the llama.cpp server
+## Start the Qwen Server Using llama.cpp
 
-Start the local llama.cpp server using the downloaded Qwen model and the server configuration expected by the application.
-
-### 6. Run the chatbot
+Open a separate terminal and navigate to the Docling HTML project directory:
 
 ```bash
+cd ~/docling-html-project
+```
+
+Start the Qwen 2.5 1.5B Instruct server:
+
+```bash
+./llama.cpp/build/bin/llama-server \
+  -m ./models/qwen2.5-1.5b-instruct-q4_k_m.gguf \
+  --host 127.0.0.1 \
+  --port 8080 \
+  -c 4096 \
+  -t 2
+```
+
+**Server configuration:**
+
+| Setting | Value |
+|---|---|
+| Model | Qwen 2.5 1.5B Instruct |
+| Quantization | Q4_K_M |
+| Host | 127.0.0.1 |
+| Port | 8080 |
+| Context size | 4096 |
+| CPU threads | 2 |
+
+The server provides an OpenAI-compatible chat completion endpoint:
+
+```text
+http://127.0.0.1:8080/v1/chat/completions
+```
+
+Keep this terminal running while using the chatbot.
+
+## Run the Chatbot
+
+Open another terminal:
+
+```bash
+cd ~/internet-atlas-chatbot
+source .venv/bin/activate
 python app.py
 ```
 
-Open the local address displayed by Flask in your browser.
+Open the local Flask address displayed in the terminal.
 
 ## Testing
 
-Run the retrieval tests:
+Run document retrieval tests:
 
 ```bash
 python test_retrieval.py
 ```
 
-Run the evaluation script:
+Run chatbot evaluation:
 
 ```bash
 python eval.py
@@ -123,13 +156,14 @@ python eval.py
 
 ## Important Notes
 
-- The chatbot uses local model inference and does not require Ollama.
-- Model files and the Python virtual environment are maintained separately from this repository.
-- The `index/` directory contains the current generated document index.
-- Answers are intended to be grounded in the documentation included in the project.
-- Access to this repository is restricted to invited collaborators.
+- The chatbot uses local inference through llama.cpp.
+- Ollama is not required.
+- Model files and the llama.cpp runtime are maintained separately.
+- The `index/` directory contains the existing searchable document index.
+- The `documents/` directory contains Internet Atlas technical documentation.
+- Answers are intended to be grounded in the available documentation.
+- This repository is private and accessible only to invited collaborators.
 
 ## License
 
 This repository is private and intended for project collaboration.
-
