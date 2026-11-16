@@ -1,0 +1,18 @@
+{
+  "documents": [
+    "docling-chatbot/README.md",
+    "frr-mrt/README.md",
+    "multi-mrt-data-poc/tenancy/README.md",
+    "multi-mrt-data-poc/tenancy/all-demo/README.md",
+    "single-mrt-data-poc/README.md",
+    "single-mrt-data-poc/converter-parquet/README.md",
+    "single-mrt-data-poc/graph-poc/README.md",
+    "single-mrt-data-poc/internet-mapper-api/README.md",
+    "single-mrt-data-poc/mrt-decode/README.md"
+  ],
+  "document_count": 9,
+  "chunk_count": 116,
+  "embedding_model": "all-MiniLM-L6-v2",
+  "embedding_dimension": 384,
+  "max_chunk_characters": 2200
+}

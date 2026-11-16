@@ -1,0 +1,3 @@
+- curl -L -o data/updates.gz http://data.ris.ripe.net/rrc00/2026.01/updates.20260131.2300.gz
+- docker compose build
+- docker compose run --rm mrt-reader
